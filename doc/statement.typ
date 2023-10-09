@@ -57,20 +57,34 @@ que permite a portabilidade da linguagem em diversos sistemas.
 As outras rotinas podem ser encontradas
 #link("https://gcc.gnu.org/onlinedocs/gccint/Soft-float-library-routines.html")[aqui].
 
-## Tarefa
-Impremente uma biblioteca de ponto flutuante
+== Tarefa
+Impremente as seguintes funções de uma biblioteca de ponto flutuante:
+- `mfloat floatsisf (mint i)` - converte um inteiro para a representação ponto flutuante
+- `mint fixsfsi (mfloat a)` - converte um ponto flutuante para a representação inteira
+- `mfloat negsf2 (mfloat a)` - retorna o negado de a (Dica: é apenas um bit flip)
+- `mfloat addsf3 (mfloat a, mfloat b)` - retorna a soma entre a e b
+- `mfloat subsf3 (mfloat a, mfloat b)` - retorna a subtração entre a e b (Dica: pode ser definido a partir da combinação de outras duas funções)
 
+Sendo `mfloat` e `mint` tipos definidos a partir da `inttypes.h` para garantir compatibilidade.
+```c
+#include <inttypes.h>
 
+typedef mint int32_t
+typedef mfloat uint32_t
+```
+
+O código não pode conter a palavra reservada 
+`float` ou `double` e será checado estáticamente.
+Palavras derivadas (acrecidas de caracteres antes ou após) 
+como `float_valor`, `valor_float`, são permitidas.
+
+Seu código não precisa tratar casos os casos de `NaN`, `Infinity` ou underflow.
 
 = Entrega final
-Ao final, gere um zip `atv2.zip` com os arquivos.
+Ao final, gere um zip `atv3.zip` com os arquivos.
 ```bash
-atv2.zip
-├── c_O0.csv
-├── c_O2.csv
-├── java.csv
-├── pypy.csv
-├── python.csv
+atv3.zip
+├── float_lib.c
 ```
 
 #bibliography("references.bib")

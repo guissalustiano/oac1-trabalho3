@@ -106,7 +106,30 @@ em uma imagem pode ser visto
 #link("https://twitter.com/3blue1brown/status/1303489896519139328")[neste link].
 gerando assim uma imagem desfocada.
 
-A implementação em C é a seguinte:
+Nesse exemplo vamos usar o #link("https://en.wikipedia.org/wiki/Sobel_operator")[kernel de sobel], 
+que permite identificar bordas verticais e horizontais, conforme a figura abaixo.
+
+#grid(
+  columns: 2,
+  gutter: 2mm,
+  figure(
+	image("valve_original.png"),
+	caption: [
+        Uma imagem colorida de uma maquina. Fonte: Wikipidia
+	],
+  ),
+  figure(
+	image("valve_sobel.png"),
+	caption: [
+  	_Seahorse Valley_
+        O sobel aplicado a imagem original. Fonte: Wikipedia
+	],
+  ),
+)
+
+// TODO: a implementação pode usar uint8_t e chacagem de overflow via assembly https://stackoverflow.com/a/20956705, talvez seja mais rapido
+// podemos assim comparar a velocidade de fazer com double, float, uint32_t e uint16_t com e sem SIMD
+A implementação em C da convolução é a seguinte:
 ```c
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
@@ -139,35 +162,16 @@ Matriz conv2d(Matriz img, Matriz kernel) {
                     sum += img.data[y*img.width + x]*kernel.data[k*kernel.width + l];
                 }
             }
+            if (sum > 255) sum = 255;
             out.data[i * img.width + j] = sum;
         }
     }
     return out;
 }
 ```
-
-Nesse exemplo vamos usar o #link("https://en.wikipedia.org/wiki/Sobel_operator")[kernel de sobel], 
-que permite identificar bordas verticais e horizontais, conforme a figura abaixo.
-
-#grid(
-  columns: 2,
-  gutter: 2mm,
-  figure(
-	image("valve_original.png"),
-	caption: [
-        Uma imagem colorida de uma maquina. Fonte: Wikipidia
-	],
-  ),
-  figure(
-	image("valve_sobel.png"),
-	caption: [
-  	_Seahorse Valley_
-        O sobel aplicado a imagem original. Fonte: Wikipedia
-	],
-  ),
-)
-
-Se vocẽ deseja saber mais sobre o assunto, recomendo o seguinte video:
+Os valores da imagem só podem variar entre 0 e 255, sendo utilizado o tipo `uini16_t` para facilitar o tratamento de overflow.
+Esse é o tipico exemplo onde o uso de SIMD pode ser muito util,
+pois podemos realizar a soma de 4 pixels ao mesmo tempo em um registrador de 128 bits.
 
 == Tarefa
 Nos iremos realizar uma comparativo de desempenho entre a implementação basica e com SIMD,
@@ -181,8 +185,8 @@ $ make
 
 E então vamos executar o brenchmark com o perf assim como na atividade anterior:
 ```bash
-$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./gradient_magnitude_basic image.ppm 13 basic.ppm 2>&1 | tee gradient_basic.csv
-$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./gradient_magnitude_simd image.ppm 13 basic.ppm 2>&1 | tee gradient_simd.csv
+$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./gradient_magnitude_basic 2>&1 | tee gradient_basic.csv
+$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./gradient_magnitude_simd 2>&1 | tee gradient_simd.csv
 ```
 
 Para facilitar a comparação dos resultados vamos usar o script 

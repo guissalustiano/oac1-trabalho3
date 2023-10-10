@@ -1,4 +1,4 @@
-FLAGS = -O2 -Wall -Wextra -std=c99 -fopenmp -lm
+FLAGS = -O2 -Wall -Wextra -std=c99 -mavx -fopenmp -lm
 
 .PHONY : all
 all : edge_basic edge_simd

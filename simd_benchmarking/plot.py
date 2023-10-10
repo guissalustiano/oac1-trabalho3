@@ -72,8 +72,8 @@ def load_csv(path: Path):
 
 def main():
     # Load load_csvs
-    basic = load_csv(Path("gradient_basic.csv"))
-    simd = load_csv(Path("gradient_simd.csv"))
+    basic = load_csv(Path("edge_basic.csv"))
+    simd = load_csv(Path("edge_simd.csv"))
 
     # Create plots folder
     plots_folder.mkdir(exist_ok=True)

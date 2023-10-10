@@ -2,41 +2,6 @@
 #include "gradient_magnitude.h"
 #include "image.h"
 
-#define FIXED_POINT (1 << 4)
-
-Matrix conv2d(Matrix img, Matrix kernel) {
-    Matrix out = {
-        img.width,
-        img.height,
-        malloc(img.width * img.height * sizeof(int32_t))
-    };
-
-    #pragma omp parallel for
-    for (int i = 0; i < img.height; i++) {
-        for (int j = 0; j < img.width; j++) {
-            int16_t sum = 0;
-            for (int k = 0; k < kernel.height; k++) {
-                for (int l = 0; l < kernel.width; l++) {
-                    int x = j + l - kernel.width / 2;
-                    int y = i + k - kernel.height / 2;
-
-                    x = clamp(x, 0, img.width - 1);
-                    y = clamp(y, 0, img.height - 1);
-
-                    int16_t weight = kernel.data[k*kernel.width + l];
-                    int16_t pixel = img.data[y*img.width + x];
-
-                    sum += weight * pixel;
-                }
-            }
-            sum /= FIXED_POINT;
-            out.data[i * img.width + j] = sum;
-        }
-    }
-
-    return out;
-}
-
 double gaussian2d(double x, double y, double sigma) {
     return expf(-(x*x + y*y) / (2.0 * sigma * sigma));
 }
@@ -50,7 +15,7 @@ double dy_gaussian2d(double x, double y, double sigma) {
 }
 
 Matrix generate_kernel(double sigma, double (*gen_func)(double, double, double)) {
-    uint32_t size = 2 * ceil(3 * sigma) + 1;
+    int size = 2 * ceil(3 * sigma) + 1;
     Matrix kernel = {
         size,
         size,
@@ -80,22 +45,6 @@ Matrix dx_gaussian_kernel(double sigma) {
 
 Matrix dy_gaussian_kernel(double sigma) {
     return generate_kernel(sigma, dy_gaussian2d);
-}
-
-Gradient gradient_kernels(Matrix gaussian) {
-    int32_t d[] = {-1,0, 1};
-    Matrix dx = {1, 3, d};
-    Matrix dy = {3, 1, d};
-
-    Matrix dx_gaussian = conv2d(gaussian, dx);
-    Matrix dy_gaussian = conv2d(gaussian, dy);
-
-    free_image(dx_gaussian);
-
-    return (Gradient) {
-        dx_gaussian,
-        dy_gaussian
-    };
 }
 
 Matrix gradient_magnitude(Matrix fx, Matrix fy) {

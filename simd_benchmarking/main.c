@@ -1,4 +1,5 @@
 #include "image.h"
+#include "convolution.h"
 #include "gradient_magnitude.h"
 
 int main() {

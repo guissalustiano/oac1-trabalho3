@@ -178,6 +178,9 @@ Nos iremos realizar uma comparativo de desempenho entre a implementação basica
 para isso #link("https://github.com/guissalustiano/oac1-trabalho3/tree/main/simd_benchmarking")[baixe o código do experimento]
 disponivel na pasta `simd_benchmarking`.
 
+Compare os códigos `edge_float.c`, `edge_int.c` e `edge_simd.c` e identifique as diferenças 
+(Dica: use o comando `diff` para comparar os arquivos).
+
 Entre no diretório e compile o código com o comando:
 ```bash
 $ make
@@ -185,7 +188,8 @@ $ make
 
 E então vamos executar o brenchmark com o perf assim como na atividade anterior:
 ```bash
-$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_basic 2>&1 | tee edge_basic.csv
+$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_float 2>&1 | tee edge_float.csv
+$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_int 2>&1 | tee edge_int.csv
 $ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_simd 2>&1 | tee edge_simd.csv
 ```
 
@@ -201,7 +205,8 @@ Ao final, gere um zip `atv3.zip` com os arquivos.
 ```bash
 atv3.zip
 ├── float_lib.c
-├── edge_basic.csv
+├── edge_float.c
+├── edge_int.c
 ├── edge_simd.csv
 ```
 

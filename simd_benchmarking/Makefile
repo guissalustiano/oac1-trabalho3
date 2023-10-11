@@ -1,4 +1,4 @@
-FLAGS = -O2 -Wall -Wextra -std=c99 -mavx -fopenmp -lm
+FLAGS = -O2 -Wall -Wextra -std=c99 -fopenmp -lm
 
 .PHONY : all
 all : edge_basic edge_simd
@@ -16,7 +16,7 @@ convolution_basic.o: convolution_basic.c convolution.h
 	gcc -c convolution_basic.c $(FLAGS)
 
 convolution_simd.o: convolution_simd.c convolution.h
-	gcc -c convolution_simd.c $(FLAGS)
+	gcc -c convolution_simd.c $(FLAGS) -mavx -mavx512f
 
 edge_basic: main.o image.o gradient_magnitude.o convolution_basic.o
 	gcc -o edge_basic main.o image.o gradient_magnitude.o convolution_basic.o $(FLAGS)

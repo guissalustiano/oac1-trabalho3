@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#define FIXED_POINT (1 << 4)
+#define FIXED_POINT (1 << 16)
 
 Matrix gaussian_kernel(double sigma);
 Matrix dx_gaussian_kernel(double sigma);

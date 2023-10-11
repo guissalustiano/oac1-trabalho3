@@ -185,8 +185,8 @@ $ make
 
 E então vamos executar o brenchmark com o perf assim como na atividade anterior:
 ```bash
-$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./gradient_magnitude_basic 2>&1 | tee gradient_basic.csv
-$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./gradient_magnitude_simd 2>&1 | tee gradient_simd.csv
+$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_basic 2>&1 | tee edge_basic.csv
+$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_simd 2>&1 | tee edge_simd.csv
 ```
 
 Para facilitar a comparação dos resultados vamos usar o script 
@@ -201,8 +201,8 @@ Ao final, gere um zip `atv3.zip` com os arquivos.
 ```bash
 atv3.zip
 ├── float_lib.c
-├── gradient_basic.csv
-├── gradient_simd.csv
+├── edge_basic.csv
+├── edge_simd.csv
 ```
 
 #bibliography("references.bib")

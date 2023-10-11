@@ -10,14 +10,14 @@ Matrix conv2d(Matrix img, Matrix kernel) {
     #pragma omp parallel for
     for (int i = 0; i < out.height; i++) {
         for (int j = 0; j < out.width; j++) {
-            int16_t sum = 0;
+            int32_t sum = 0;
             for (int k = 0; k < kernel.height; k++) {
                 for (int l = 0; l < kernel.width; l++) {
                     int x = j + l;
                     int y = i + k;
 
-                    int16_t weight = kernel.data[k*kernel.width + l];
-                    int16_t pixel = img.data[y*img.width + x];
+                    int32_t weight = kernel.data[k*kernel.width + l];
+                    int32_t pixel = img.data[y*img.width + x];
 
                     sum += weight * pixel;
                 }

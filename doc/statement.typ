@@ -131,41 +131,39 @@ que permite identificar bordas verticais e horizontais, conforme a figura abaixo
 // podemos assim comparar a velocidade de fazer com double, float, uint32_t e uint16_t com e sem SIMD
 A implementação em C da convolução é a seguinte:
 ```c
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define clamp(x, a, b) max(a, min(b, x))
-
 typedef struct {
-    int width;
-    int height;
-    uint16_t *data;
-} Matriz;
+  int width;
+  int height;
+  int32_t *data;
+} Matrix;
 
-Matriz conv2d(Matriz img, Matriz kernel) {
-    Matriz out = {
-        img.width,
-        img.height,
-        malloc(img.width * img.height * sizeof(uint16_t))
+Matrix conv2d(Matrix img, Matrix kernel) {
+    Matrix out = {
+        img.width - kernel.width + 1,
+        img.height - kernel.height + 1,
+        malloc(img.width * img.height * sizeof(int32_t))
     };
 
-    for (int i = 0; i < img.height; i++) {
-        for (int j = 0; j < img.width; j++) {
-            int sum = 0;
+    #pragma omp parallel for
+    for (int i = 0; i < out.height; i++) {
+        for (int j = 0; j < out.width; j++) {
+            int32_t sum = 0;
             for (int k = 0; k < kernel.height; k++) {
                 for (int l = 0; l < kernel.width; l++) {
-                    int x = j + l - kernel.width / 2;
-                    int y = i + k - kernel.height / 2;
+                    int x = j + l;
+                    int y = i + k;
 
-                    x = clamp(x, 0, img.width - 1);
-                    y = clamp(y, 0, img.height - 1);
+                    int32_t weight = kernel.data[k*kernel.width + l];
+                    int32_t pixel = img.data[y*img.width + x];
 
-                    sum += img.data[y*img.width + x]*kernel.data[k*kernel.width + l];
+                    sum += weight * pixel;
                 }
             }
-            if (sum > 255) sum = 255;
-            out.data[i * img.width + j] = sum;
+            sum /= FIXED_POINT;
+            out.data[i * out.width + j] = sum;
         }
     }
+
     return out;
 }
 ```

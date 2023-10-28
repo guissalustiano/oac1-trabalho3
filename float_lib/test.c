@@ -1,4 +1,6 @@
 #include "float_lib.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void assert_mint(mint a, mint b) {
     if (a != b) {

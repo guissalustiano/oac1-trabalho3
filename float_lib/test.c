@@ -4,7 +4,7 @@
 
 void assert_mint(mint a, mint b) {
     if (a != b) {
-        printf("Expected %d, got %d\n", a, b);
+        printf("Expected %d, got %d\n", b, a);
         exit(1);
     }
 }

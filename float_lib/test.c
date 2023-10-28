@@ -11,7 +11,7 @@ void assert_mint(mint a, mint b) {
 
 void assert_mfloat(mfloat a, mfloat b) {
     if (a != b) {
-        printf("Expected %f, got %f\n", a, b);
+        printf("Expected %x, got %x\n", b, a);
         exit(1);
     }
 }

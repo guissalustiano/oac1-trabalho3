@@ -1,6 +1,5 @@
 #include "convolution.h"
 #include "gradient_magnitude.h"
-#include <immintrin.h>
 
 // Vers'ao intermediaria para o sind que ajuda a visualizar o vertor de soma e pixel
 // a ideia aqui eh carregar 16 pixels de uma vez

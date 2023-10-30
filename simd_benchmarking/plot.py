@@ -73,7 +73,6 @@ def load_csv(path: Path):
 def main():
     # Load load_csvs
     edge_float = load_csv(Path("edge_float.csv"))
-    edge_int = load_csv(Path("edge_int.csv"))
     edge_simd = load_csv(Path("edge_simd.csv"))
 
     # Create plots folder
@@ -85,8 +84,8 @@ def main():
     ax.set_ylabel("Duration (s)")
     ax.set_xlabel("Implementation")
     ax.bar(
-        ["Float", "Int", "SIMD"],
-        [edge_float['duration'], edge_int['duration'], edge_simd['duration']],
+        ["Float", "SIMD"],
+        [edge_float['duration'], edge_simd['duration']],
     )
     fig.savefig(plots_folder / "duration.png")
 
@@ -96,8 +95,8 @@ def main():
     ax.set_ylabel("Instructions per cycle")
     ax.set_xlabel("Implementation")
     ax.bar(
-        ["Float", "Int", "SIMD"],
-        [edge_float['instr_per_cycle'], edge_int['instr_per_cycle'], edge_simd['instr_per_cycle']],
+        ["Float", "SIMD"],
+        [edge_float['instr_per_cycle'], edge_simd['instr_per_cycle']],
     )
     fig.savefig(plots_folder / "ipc.png")
 

@@ -8,7 +8,7 @@
 typedef struct {
   int width;
   int height;
-  int32_t *data;
+  float *data;
 } Matrix;
 
 void write_image(Matrix image, const char *filename);

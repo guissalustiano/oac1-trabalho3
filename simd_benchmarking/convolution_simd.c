@@ -11,36 +11,27 @@ Matrix conv2d(Matrix img, Matrix kernel) {
 
     #pragma omp parallel for
     for (int i = 0; i < out.height; i++) {
-        for (int j = 0; j < out.width; j+=16) {
+        for (int j = 0; j < out.width; j+=8) {
             // sum = 0;
-            __m512i sum = _mm512_setzero_si512();
+            __m256 sum = _mm256_setzero_ps();
 
             for (int k = 0; k < kernel.height; k++) {
                 for (int l = 0; l < kernel.width; l++) {
                     int x = j + l;
                     int y = i + k;
 
-                    int32_t weight = kernel.data[k*kernel.width + l];
+                    float weight = kernel.data[k*kernel.width + l];
 
                     // pixeis = img.data[y*img.width + x];
-                    __m512i pixeis = _mm512_loadu_epi32(img.data + y*img.width + x);
+                    __m256 pixeis = _mm256_loadu_ps(img.data + y*img.width + x);
 
                     // sum += weight * pixeis[m];
-                    __m512i weights = _mm512_set1_epi32(weight);
-                    sum = _mm512_add_epi32(sum, _mm512_mullo_epi32(weights, pixeis));
+                    __m256 weights = _mm256_set1_ps(weight);
+                    sum = _mm256_add_ps(sum, _mm256_mul_ps(weights, pixeis));
                 }
             }
-            // sum /= FIXED_POINT;
-            //__m512i fixed_point = _mm512_set1_epi32(FIXED_POINT);
-            //sum = _mm512_div_epi16(sum, fixed_point);
-
             // out.data[i * out.width + j] = sum;
-            _mm512_storeu_epi32(out.data + i * out.width + j, sum);
-
-            // just intel compiler supoort simd integer div
-            for(int m = 0; m < 16; m++) {
-                out.data[i * out.width + j + m] /= FIXED_POINT;
-            }
+            _mm256_storeu_ps(out.data + i * out.width + j, sum);
         }
     }
     return out;

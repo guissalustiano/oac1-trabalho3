@@ -2,19 +2,19 @@
 #include "gradient_magnitude.h"
 #include "image.h"
 
-double gaussian2d(double x, double y, double sigma) {
+float gaussian2d(float x, float y, float sigma) {
     return expf(-(x*x + y*y) / (2.0 * sigma * sigma));
 }
 
-double dx_gaussian2d(double x, double y, double sigma) {
+float dx_gaussian2d(float x, float y, float sigma) {
     return -x * gaussian2d(x, y, sigma) / (sigma * sigma);
 }
 
-double dy_gaussian2d(double x, double y, double sigma) {
+float dy_gaussian2d(float x, float y, float sigma) {
     return dx_gaussian2d(y, x, sigma);
 }
 
-Matrix generate_kernel(double sigma, double (*gen_func)(double, double, double)) {
+Matrix generate_kernel(double sigma, float (*gen_func)(float, float, float)) {
     int size = 2 * ceil(3 * sigma) + 1;
     Matrix kernel = {
         size,
@@ -27,8 +27,8 @@ Matrix generate_kernel(double sigma, double (*gen_func)(double, double, double))
         for (int j = 0; j < size; j++) {
             int y = j - size / 2;
 
-            double weight = gen_func(x, y, sigma);
-            kernel.data[i * size + j] = weight * FIXED_POINT;
+            float weight = gen_func(x, y, sigma);
+            kernel.data[i * size + j] = weight;
         }
     }
 

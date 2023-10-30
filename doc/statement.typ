@@ -131,32 +131,31 @@ A implementação em C da convolução é a seguinte:
 typedef struct {
   int width;
   int height;
-  int32_t *data;
+  float* data;
 } Matrix;
 
 Matrix conv2d(Matrix img, Matrix kernel) {
     Matrix out = {
         img.width - kernel.width + 1,
         img.height - kernel.height + 1,
-        malloc(img.width * img.height * sizeof(int32_t))
+        malloc(img.width * img.height * sizeof(float))
     };
 
     #pragma omp parallel for
     for (int i = 0; i < out.height; i++) {
         for (int j = 0; j < out.width; j++) {
-            int32_t sum = 0;
+            float sum = 0;
             for (int k = 0; k < kernel.height; k++) {
                 for (int l = 0; l < kernel.width; l++) {
                     int x = j + l;
                     int y = i + k;
 
-                    int32_t weight = kernel.data[k*kernel.width + l];
-                    int32_t pixel = img.data[y*img.width + x];
+                    float weight = kernel.data[k*kernel.width + l];
+                    float pixel = img.data[y*img.width + x];
 
                     sum += weight * pixel;
                 }
             }
-            sum /= FIXED_POINT;
             out.data[i * out.width + j] = sum;
         }
     }
@@ -164,16 +163,15 @@ Matrix conv2d(Matrix img, Matrix kernel) {
     return out;
 }
 ```
-Os valores da imagem só podem variar entre 0 e 255, sendo utilizado o tipo `uini16_t` para facilitar o tratamento de overflow.
-Esse é o tipico exemplo onde o uso de SIMD pode ser muito útil,
-pois podemos realizar a soma de 4 pixels ao mesmo tempo em um registrador de 128 bits.
+Os pixeis da imagem utilizam o tipo `float` de apenas 32 bits, 
+onde podemos utilizar um registrador maior de 256 bits para realizar a operação de 8 pixels ao mesmo tempo.
 
 == Tarefa
 Iremos realizar um comparativo de desempenho entre a implementação básica e com SIMD.
 Para isso #link("https://github.com/guissalustiano/oac1-trabalho3/tree/main/simd_benchmarking")[baixe o código do experimento]
 disponivel na pasta `simd_benchmarking`.
 
-Compare os códigos `edge_float.c`, `edge_int.c` e `edge_simd.c` e identifique as diferenças 
+Compare os códigos `convolution_float.c`, e `convolution_simd.c` e identifique as diferenças 
 (Dica: use o comando `diff` para comparar os arquivos).
 
 Entre no diretório e compile o código com o comando:
@@ -184,7 +182,6 @@ $ make
 E então vamos executar o brenchmark com o perf assim como na atividade anterior:
 ```bash
 $ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_float 2>&1 | tee edge_float.csv
-$ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_int 2>&1 | tee edge_int.csv
 $ perf stat -x ';' -r 10 -e cycles,instructions,duration_time ./edge_simd 2>&1 | tee edge_simd.csv
 ```
 
@@ -200,8 +197,7 @@ Ao final, gere um zip `atv3.zip` com os arquivos.
 ```bash
 atv3.zip
 ├── float_lib.c
-├── edge_float.c
-├── edge_int.c
+├── edge_float.csv
 ├── edge_simd.csv
 ```
 

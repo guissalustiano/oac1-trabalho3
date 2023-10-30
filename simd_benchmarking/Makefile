@@ -16,7 +16,7 @@ convolution_float.o: convolution_float.c convolution.h
 	gcc -c convolution_float.c $(FLAGS)
 
 convolution_simd.o: convolution_simd.c convolution.h
-	gcc -o convolution_simd.o -c convolution_simd.c $(FLAGS) -mavx
+	gcc -o convolution_simd.o -c convolution_soft_simd.c $(FLAGS)
 
 edge_float: main.o image.o gradient_magnitude.o convolution_float.o
 	gcc -o edge_float main.o image.o gradient_magnitude.o convolution_float.o $(FLAGS)

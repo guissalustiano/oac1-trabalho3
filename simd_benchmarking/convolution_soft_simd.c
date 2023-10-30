@@ -15,29 +15,21 @@ Matrix conv2d(Matrix img, Matrix kernel) {
     for (int i = 0; i < out.height; i++) {
         for (int j = 0; j < out.width; j++) {
             //__m256i sum = _mm256_setzero_si256(); // sum = 0
-            int32_t sum[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+            float sum[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
             for (int k = 0; k < kernel.height; k++) {
                 for (int l = 0; l < kernel.width; l++) {
                     int x = j + l;
                     int y = i + k;
 
-                    int32_t weight = kernel.data[k*kernel.width + l];
-                    int32_t pixel = img.data[y*img.width + x];
+                    float weight = kernel.data[k*kernel.width + l];
 
-                    int32_t pixeis[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+                    float pixeis[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                     for (int m = 0; m < 16; m++) {
                         pixeis[m] = img.data[y*img.width + x + m];
-                    }
-
-                    for(int m = 0; m < 16; m++) {
                         sum[m] += weight * pixeis[m];
                     }
                 }
             }
-            for(int m = 0; m < 16; m++) {
-                sum[m] /= FIXED_POINT;
-            }
-
             for(int m = 0; m < 16; m++) {
                 out.data[i * out.width + j + m] = sum[m];
             }

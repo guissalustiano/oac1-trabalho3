@@ -34,8 +34,8 @@ void assert_mint(int32_t a, int32_t b) {
     }
 }
 
-void assert_float(floatint a, floatint b) {
-    if (!within(a.f, b.f, ACCEPT_ERROR)) {
+void assert_float(floatint a, floatint b, float tol) {
+    if (!within(a.f, b.f, tol)) {
         printf("ERROR. Expected %f (%x), got %f (%x)\n", b.f, b.i, a.f, a.i);
     } else {
         printf("OK. %f (%x)\n", a.f, a.i);
@@ -48,10 +48,11 @@ void assert_floatsisf(int32_t a) {
     actual.i = floatsisf(a);
     expected.f = (float) a;
 
-    assert_float(actual, expected);
+    assert_float(actual, expected, ACCEPT_ERROR);
 }
 
 void test_cases_floatsist() {
+    puts("Testing floatsist");
     for (mint i = INT32_MIN; i < -0; i/=10) {
         assert_floatsisf(i);
     }
@@ -73,6 +74,7 @@ void assert_fixsfsi(float a) {
 }
 
 void test_cases_fixsfsi() {
+    puts("Testing fixsfsi");
     for (float i = INT32_MIN; i < -0; i/=10) {
         assert_fixsfsi(i);
     }
@@ -90,10 +92,11 @@ void assert_negsf2(float a) {
     actual.i = negsf2(arg.i);
     expected.f = -a;
 
-    assert_float(actual, expected);
+    assert_float(actual, expected, 0);
 }
 
 void test_cases_negsf2() {
+    puts("Testing negsf2");
     for (float i = FLT_MAX; i > 0; i/=1000) {
         assert_negsf2(i);
         assert_negsf2(-i);

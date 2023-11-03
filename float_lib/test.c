@@ -36,9 +36,9 @@ void assert_mint(int32_t a, int32_t b) {
 
 void assert_float(floatint a, floatint b) {
     if (!within(a.f, b.f, ACCEPT_ERROR)) {
-        printf("ERROR. Expected %.3f (%x), got %.3f (%x)\n", b.f, b.i, a.f, a.i);
+        printf("ERROR. Expected %f (%x), got %f (%x)\n", b.f, b.i, a.f, a.i);
     } else {
-        printf("OK. %.3f (%x)\n", a.f, a.i);
+        printf("OK. %f (%x)\n", a.f, a.i);
     }
 }
 
@@ -82,9 +82,29 @@ void test_cases_fixsfsi() {
     }
 }
 
+void assert_negsf2(float a) {
+    floatint arg;
+    floatint actual, expected;
+
+    arg.f = a;
+    actual.i = negsf2(arg.i);
+    expected.f = -a;
+
+    assert_float(actual, expected);
+}
+
+void test_cases_negsf2() {
+    for (float i = FLT_MAX; i > 0; i/=1000) {
+        assert_negsf2(i);
+        assert_negsf2(-i);
+    }
+    assert_negsf2(0.0);
+}
+
 int main() {
     test_cases_floatsist();
     test_cases_fixsfsi();
+    test_cases_negsf2();
     return 0;
 }
 

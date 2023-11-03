@@ -51,11 +51,11 @@ void assert_floatsisf(int32_t a) {
     assert_float(actual, expected);
 }
 
-// Nao sera testado o caso de 0, pois zero em float point eh um caso especial
 void test_cases_floatsist() {
     for (mint i = INT32_MIN; i < -0; i/=10) {
         assert_floatsisf(i);
     }
+    assert_floatsisf(0);
     for (mint i = INT32_MAX; i > 0; i/=10) {
         assert_floatsisf(i);
     }
@@ -76,6 +76,7 @@ void test_cases_fixsfsi() {
     for (float i = INT32_MIN; i < -0; i/=10) {
         assert_fixsfsi(i);
     }
+    assert_fixsfsi(0.0);
     for (float i = INT32_MAX; i > 0; i/=10) {
         assert_fixsfsi(i);
     }

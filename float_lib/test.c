@@ -4,11 +4,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include <fenv.h>
 
 # define true 1
 # define false 0
-
-#define ACCEPT_ERROR 0.00001
 
 // from https://math.stackexchange.com/a/4508789
 uint8_t within(float a, float b, float tol) {
@@ -17,7 +16,8 @@ uint8_t within(float a, float b, float tol) {
         return true;
     }
     // Since d =/= 0 we know a, b =/= 0 so division by zero will not happen
-    return d/(fabs(a)+fabs(b)) < tol;
+    float err = d/(fabs(a)+fabs(b));
+    return err < tol;
 }
 
 typedef union {
@@ -48,7 +48,7 @@ void assert_floatsisf(int32_t a) {
     actual.i = floatsisf(a);
     expected.f = (float) a;
 
-    assert_float(actual, expected, ACCEPT_ERROR);
+    assert_float(actual, expected, 0.00001);
 }
 
 void test_cases_floatsist() {
@@ -104,10 +104,71 @@ void test_cases_negsf2() {
     assert_negsf2(0.0);
 }
 
+// float flags from: https://stackoverflow.com/a/15655732
+void assert_addsf3(float a, float b) {
+    floatint arg1, arg2;
+    floatint actual, expected;
+
+    arg1.f = a;
+    arg2.f = b;
+    actual.i = addsf3(arg1.i, arg2.i);
+
+    feclearexcept(FE_ALL_EXCEPT);
+    expected.f = a + b;
+    if (fetestexcept(FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW)) {
+        return; // ignore invalid test cases
+    }
+
+    assert_float(actual, expected, 0.025);
+}
+
+void test_cases_addsf3() {
+    puts("Testing addsf3");
+    for (float i = FLT_MAX; i > 1e-20; i/=1e2) {
+        for (float j = FLT_MAX; j > 1e-20; j/=1e2) {
+            assert_addsf3(i, j);
+            assert_addsf3(-i, j);
+            assert_addsf3(i, -j);
+            assert_addsf3(-i, -j);
+        }
+    }
+}
+
+void assert_subsf3(float a, float b) {
+    floatint arg1, arg2;
+    floatint actual, expected;
+
+    arg1.f = a;
+    arg2.f = b;
+    actual.i = subsf3(arg1.i, arg2.i);
+
+    feclearexcept(FE_ALL_EXCEPT);
+    expected.f = a - b;
+    if (fetestexcept(FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW)) {
+        return; // ignore invalid test cases
+    }
+
+    assert_float(actual, expected, 0.025);
+}
+
+void test_cases_subsf3() {
+    puts("Testing subsf3");
+    for (float i = FLT_MAX; i > 1e-20; i/=1e2) {
+        for (float j = FLT_MAX; j > 1e-20; j/=1e2) {
+            assert_subsf3(i, j);
+            assert_subsf3(-i, j);
+            assert_subsf3(i, -j);
+            assert_subsf3(-i, -j);
+        }
+    }
+}
+
 int main() {
     test_cases_floatsist();
     test_cases_fixsfsi();
     test_cases_negsf2();
+    test_cases_addsf3();
+    test_cases_subsf3();
     return 0;
 }
 

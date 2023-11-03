@@ -75,7 +75,7 @@ O código não pode conter a palavra reservada
 Palavras derivadas (acrecidas de caracteres antes ou após) 
 como `float_valor`, `valor_float`, são permitidas.
 
-Seu código não precisa tratar casos os casos de `NaN`, `Infinity` ou underflow.
+Seu código não precisa tratar casos os casos de `NaN`, `Infinity`, overflow ou underflow.
 
 Você pode encontrar um template com alguns casos de teste
 #link("https://github.com/guissalustiano/oac1-trabalho3/tree/main/float_lib")[no repositorio do experimento].
